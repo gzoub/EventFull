@@ -121,10 +121,6 @@ th {
     color: white;
 }
 
-/* Zebra Striping: Κάνει τις ζυγές γραμμές ελαφρώς γκρι */
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
 
 /* Hover εφέ στη γραμμή */
 tbody tr:hover {
@@ -136,3 +132,135 @@ tbody tr:hover {
     max-width: 900px; /* Διπλάσιο πλάτος από τη φόρμα εγγραφής */
     width: 95%;      /* Για να είναι responsive σε μικρές οθόνες */
 }
+
+/* 1. Το κουμπί "+ Νέα Εκδήλωση" (Μπλε κουτάκι) */
+.btn-new-event {
+    background-color: #007bff; /* Μπλε χρώμα */
+    color: white !important;    /* Λευκά γράμματα */
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;         /* Έντονα γράμματα */
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-new-event:hover {
+    background-color: #0056b3; /* Πιο σκούρο μπλε στο hover */
+}
+
+/* 2. Ο σύνδεσμος "Επεξεργασία" (Κόκκινα γράμματα, χωρίς κουτάκι) */
+.btn-edit {
+    color: #dc3545;            /* Κόκκινο χρώμα */
+    text-decoration: none;     /* Αφαίρεση υπογράμμισης */
+    font-weight: bold;
+    background: none !important; /* Αφαίρεση γκρι φόντου */
+    padding: 0;
+    border: none;
+}
+
+.btn-edit:hover {
+    text-decoration: underline; /* Υπογράμμιση μόνο όταν ακουμπάει το ποντίκι */
+}
+
+/* 1. CONTAINER ΓΙΑ ΟΛΗ ΤΗΝ ΟΘΟΝΗ */
+.dashboard-container.wide {
+    max-width: 95%; 
+    width: 95%;
+    margin: 20px auto;
+}
+
+/* 2. LAYOUT ΦΙΛΤΡΩΝ (ΚΑΤΗΓΟΡΙΕΣ ΑΡΙΣΤΕΡΑ - ΑΝΑΖΗΤΗΣΗ ΔΕΞΙΑ) */
+.search-header {
+    display: flex;
+    justify-content: space-between; /* Σπρώχνει τα στοιχεία στις άκρες */
+    align-items: center;
+    margin-bottom: 30px;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Μεγαλώνουμε το πλαίσιο των Κατηγοριών (Αριστερά) */
+.search-left select {
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 250px; /* Σταθερό φαρδύ πλάτος */
+    cursor: pointer;
+    background-color: white;
+    outline: none;
+}
+
+/* Μεγαλώνουμε το πλαίσιο της Αναζήτησης και το Κουμπί (Δεξιά) */
+.search-right {
+    display: flex;
+    gap: 0; /* Κολλητά το input με το κουμπί */
+}
+
+.search-right input {
+    padding: 12px 20px;
+    font-size: 16px;
+    width: 350px; /* Πιο μακρύ πλαίσιο */
+    border: 1px solid #ccc;
+    border-radius: 8px 0 0 8px; /* Στρογγυλάδα μόνο αριστερά */
+    outline: none;
+}
+
+.btn-search-attached {
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0; /* Στρογγυλάδα μόνο δεξιά */
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-search-attached:hover {
+    background-color: #0056b3;
+}
+
+/* 3. GRID ΓΙΑ ΤΙΣ ΚΑΡΤΕΣ */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive κάρτες */
+    gap: 25px;
+}
+
+.event-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px); /* Μικρό εφέ όταν ακουμπάει το ποντίκι */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 1.1em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.card-category {
+    color: #666;
+    font-size: 0.95em;
+    margin-bottom: 25px;
+}
+

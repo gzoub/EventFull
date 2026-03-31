@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <title>Αναζήτηση - EventFull</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>EventFull - Αναζήτηση</h1>
+        <nav>
+            <a href="dashboard.html">Αρχική</a> | 
+            <a href="search.html">Αναζήτηση</a> | 
+            <a href="messages.html">Μηνύματα</a> | 
+            <a href="index.html">Αποσύνδεση</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-container wide">
+    <h2>Αναζήτηση Εκδηλώσεων</h2>
+    
+    <div class="search-header">
+        <div class="search-left">
+            <select style="padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                <option>Όλες οι κατηγορίες</option>
+                <option>Μουσική</option>
+                <option>Τεχνολογία</option>
+                <option>Αθλητισμός</option>
+            </select>
+        </div>
+        
+        <div class="search-right">
+            <input type="text" placeholder="Αναζήτηση...">
+            <button class="btn-search-attached">Αναζήτηση</button>
+        </div>
+    </div>
+
+    <div class="events-grid">
+        
+        <div class="event-card">
+            <div class="card-header">
+                <span>Rock Summer Festival</span>
+                <span style="color: #007bff;">15/07/2026</span>
+            </div>
+            <div class="card-category">Είδος: Μουσική</div>
+            <a href="#" class="btn-new-event" style="text-align: center; display: block;">Κράτηση</a>
+        </div>
+
+        <div class="event-card">
+            <div class="card-header">
+                <span>AI Workshop</span>
+                <span style="color: #007bff;">20/08/2026</span>
+            </div>
+            <div class="card-category">Είδος: Τεχνολογία</div>
+            <a href="#" class="btn-new-event" style="text-align: center; display: block;">Κράτηση</a>
+        </div>
+
+        </div>
+</main>
+</body>
+</html>

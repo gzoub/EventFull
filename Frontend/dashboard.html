@@ -15,8 +15,11 @@
         </nav>
     </header>
 
-    <main class="dashboard-container">
-        <h2>Οι Εκδηλώσεις μου</h2>
+    <main class="dashboard-container wide" >
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Οι Εκδηλώσεις μου</h2>
+            <a href="#" class="btn-new-event">+ Νέα Εκδήλωση</a>
+        </div>
         
         <table>
             <thead>
@@ -25,10 +28,17 @@
                     <th>Ημερομηνία</th>
                     <th>Τοποθεσία</th>
                     <th>Κατάσταση</th>
-                </tr>
+                    <th>Ενέργειες</th> </tr>
             </thead>
             <tbody>
-                
+                <tr>
+                    <td>Rock Summer Festival</td>
+                    <td>15/07/2026</td>
+                    <td>Τεχνόπολη, Αθήνα</td>
+                    <td><span class="status active">Ενεργή</span></td>
+                    <td><a href="#" class="btn-edit">Επεξεργασία</a></td>
+                </tr>
+               
             </tbody>
         </table>
     </main>
