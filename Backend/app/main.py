@@ -137,6 +137,147 @@ def reject_user(username: str, db: Session = Depends(get_db), admin: User = Depe
     db.commit()
     return {"message": "Η αίτηση του χρήστη απορρίφθηκε/διαγράφηκε."}
 
+
+@app.get("/admin/events/export")
+def export_all_events(
+    format: str = "json", # Default επιλογή το json, αλλά δέχεται και "xml"
+    db: Session = Depends(get_db), 
+    admin: User = Depends(get_current_admin)
+    ):
+    """
+    Απαίτηση 12: Εξαγωγή όλων των εκδηλώσεων σε μορφή JSON ή XML 
+    σύμφωνα με το πρότυπο DTD της εκφώνησης.
+    """
+    # Φέρνουμε όλες τις εκδηλώσεις από τη βάση
+    events = db.query(Event).all()
+    
+    # --- ΠΕΡΙΠΤΩΣΗ JSON ---
+    if format.lower() == "json":
+        # Επιστρέφουμε μια λίστα με λεξικά. Το FastAPI θα το μετατρέψει αυτόματα σε JSON.
+        json_output = []
+        for ev in events:
+            # Φτιάχνουμε μια καθαρή δομή JSON που αντιστοιχεί στο DTD
+            json_output.append({
+                "EventID": ev.id,
+                "Title": ev.title,
+                "Categories": [c.category_name for c in ev.categories] if hasattr(ev, 'categories') else [],
+                "EventType": ev.event_type,
+                "Venue": ev.venue,
+                "Address": ev.address,
+                "City": ev.city,
+                "Country": ev.country,
+                "GeoLocation": {"Latitude": ev.latitude, "Longitude": ev.longitude} if ev.latitude and ev.longitude else None,
+                "StartDateTime": ev.start_datetime.isoformat() if isinstance(ev.start_datetime, datetime) else ev.start_datetime,
+                "EndDateTime": ev.end_datetime.isoformat() if isinstance(ev.end_datetime, datetime) else ev.end_datetime,
+                "Capacity": ev.capacity,
+                "TicketTypes": [
+                    {
+                        "TicketTypeID": tk.id,
+                        "Name": tk.name,
+                        "Price": float(tk.price),
+                        "Quantity": tk.quantity,
+                        "Available": tk.available
+                    } for tk in ev.ticket_types
+                ] if hasattr(ev, 'ticket_types') else [],
+                "Bookings": [
+                    {
+                        "BookingID": bk.id,
+                        "AttendeeID": bk.attendee_id, # ή bk.attendee.username αν κρατάς σχέση με user
+                        "Time": bk.time.isoformat() if hasattr(bk, 'time') and isinstance(bk.time, datetime) else str(datetime.now()),
+                        "TicketTypeRef": bk.ticket_type_id,
+                        "NumberOfTickets": bk.number_of_tickets,
+                        "TotalCost": float(bk.total_cost),
+                        "BookingStatus": bk.booking_status
+                    } for bk in ev.bookings
+                ] if hasattr(ev, 'bookings') else [],
+                "OrganizerID": ev.organizer_id,
+                "Status": ev.status,
+                "Description": ev.description
+            })
+        return json_output
+
+    # --- ΠΕΡΙΠΤΩΣΗ XML ---
+    elif format.lower() == "xml":
+        # Χτίζουμε το XML String ακολουθώντας αυστηρά τη σειρά του DTD
+        xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xml += '<Events>\n'
+        
+        for ev in events:
+            xml += f'  <Event EventID="{ev.id}">\n'
+            xml += f'    <Title>{ev.title}</Title>\n'
+            
+            # Categories (1 ή περισσότερες βάσει DTD)
+            if hasattr(ev, 'categories') and ev.categories:
+                for cat in ev.categories:
+                    xml += f'    <Category>{cat.category_name}</Category>\n'
+            else:
+                # Fallback αν δεν έχει κατηγορία, για να μην σπάσει το DTD (Category+)
+                xml += f'    <Category>General</Category>\n'
+                
+            xml += f'    <EventType>{ev.event_type}</EventType>\n'
+            xml += f'    <Venue>{ev.venue}</Venue>\n'
+            xml += f'    <Address>{ev.address}</Address>\n'
+            xml += f'    <City>{ev.city}</City>\n'
+            xml += f'    <Country>{ev.country}</Country>\n'
+            
+            # GeoLocation (Προαιρετικό ? βάσει DTD)
+            if ev.latitude and ev.longitude:
+                xml += f'    <GeoLocation Latitude="{ev.latitude}" Longitude="{ev.longitude}"/>\n'
+                
+            # DateTimes
+            start_str = ev.start_datetime.isoformat() if isinstance(ev.start_datetime, datetime) else ev.start_datetime
+            end_str = ev.end_datetime.isoformat() if isinstance(ev.end_datetime, datetime) else ev.end_datetime
+            xml += f'    <StartDateTime>{start_str}</StartDateTime>\n'
+            xml += f'    <EndDateTime>{end_str}</EndDateTime>\n'
+            xml += f'    <Capacity>{ev.capacity}</Capacity>\n'
+            
+            # TicketTypes (TicketType+)
+            xml += '    <TicketTypes>\n'
+            if hasattr(ev, 'ticket_types') and ev.ticket_types:
+                for tk in ev.ticket_types:
+                    xml += f'      <TicketType TicketTypeID="{tk.id}">\n'
+                    xml += f'        <Name>{tk.name}</Name>\n'
+                    xml += f'        <Price>{tk.price}</Price>\n'
+                    xml += f'        <Quantity>{tk.quantity}</Quantity>\n'
+                    xml += f'        <Available>{tk.available}</Available>\n'
+                    xml += '      </TicketType>\n'
+            xml += '    </TicketTypes>\n'
+            
+            # Bookings (Bookings*)
+            xml += '    <Bookings>\n'
+            if hasattr(ev, 'bookings') and ev.bookings:
+                for bk in ev.bookings:
+                    bk_time = bk.time.isoformat() if hasattr(bk, 'time') and isinstance(bk.time, datetime) else start_str
+                    xml += f'      <Booking BookingID="{bk.id}">\n'
+                    xml += f'        <Attendee UserID="{bk.attendee_id}"/>\n'
+                    xml += f'        <Time>{bk_time}</Time>\n'
+                    xml += f'        <TicketTypeRef>{bk.ticket_type_id}</TicketTypeRef>\n'
+                    xml += f'        <NumberOfTickets>{bk.number_of_tickets}</NumberOfTickets>\n'
+                    xml += f'        <TotalCost>{bk.total_cost}</TotalCost>\n'
+                    xml += f'        <BookingStatus>{bk.booking_status}</BookingStatus>\n'
+                    xml += '      </Booking>\n'
+            xml += '    </Bookings>\n'
+            
+            # Organizer, Status, Description
+            xml += f'    <Organizer UserID="{ev.organizer_id}"/>\n'
+            xml += f'    <Status>{ev.status}</Status>\n'
+            xml += f'    <Description>{ev.description}</Description>\n'
+            
+            # Media (Προαιρετικό ?, αν δεν έχεις πίνακα media το αφήνουμε κενό tag)
+            xml += '    <Media/>\n'
+            xml += '  </Event>\n'
+            
+        xml += '</Events>'
+        
+        # Επιστρέφουμε το XML String με το σωστό header (application/xml)
+        return Response(content=xml, media_type="application/xml")
+        
+    else:
+        raise HTTPException(
+            status_code=400, 
+            detail="Μη έγκυρη μορφή αρχείου. Επιλέξτε 'json' ή 'xml'."
+        )
+
 # --- AUTHENTICATION ENDPOINTS ---
 
 @app.post("/register", response_model=Token)

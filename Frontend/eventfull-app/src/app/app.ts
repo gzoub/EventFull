@@ -14,12 +14,10 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule, 
     RouterOutlet, 
-    RouterLink,
     HeaderComponent,
     NavigationComponent,
     FooterComponent,
-    FormsModule,
-    DashboardComponent
+    FormsModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
